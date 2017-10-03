@@ -1,1 +1,3 @@
-Zombulator
+# Zombulator
+
+by Garrett Gunnell
