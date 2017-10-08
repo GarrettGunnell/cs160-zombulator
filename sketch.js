@@ -4,8 +4,7 @@
 var zombieX = 0
 var zombie2X = 50
 var zombieY = 0
-var zombieLength = 80
-var zombieReverse = 1536
+var zombieReverse = 1920
 
 
 function setup() {
@@ -23,24 +22,23 @@ function draw() {
 	var randompos2 = Math.floor(Math.random() * 1081);
 	background(255, 255, 255);
 	noStroke();
-	//fill(100,0,0);
+	fill(255,128,255);
 	ellipse(zombieX, 50, 80, 80);
 	ellipse(zombie2X, 150, 80, 80);
-	zombieY = zombieY + 1;
-	zombieLength = zombieLength + 2;
+	//zombieY = zombieY + 1;
 
 	//text(windowWidth, 100, 100)
 
-	if (zombieX >= windowWidth) {
-		if (zombieReverse <= 1536 && zombieReverse > 0) {
+	if (zombieX >= 1920) {
+		if (zombieReverse <= 1920 && zombieReverse > 0) {
 			fill(255,255,255);
 			ellipse(zombieX, 50, 90, 90);
-			fill(0,0,0);
+			fill(255,128,255);
 			ellipse(zombieReverse, 50, 80, 80);
-			zombieReverse = zombieReverse - 5
+			zombieReverse = zombieReverse - 5;
 		} else if (zombieReverse <= 0) {
-			zombieX = 0
-			zombieReverse = 1536
+			zombieX = 0;
+			zombieReverse = 1920;
 		}
 	} else {
 		zombieX = zombieX + 5;
