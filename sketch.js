@@ -1,22 +1,22 @@
 // Zombulator by Garrett Gunnell
 
 
-var zombieY = 100;
+var zombieY;
 var zombieX;
 var zombieV = 0;
-var zombieA = 0.1;
-var zombieDamping = -0.6;
+var zombieA = 0.8;
+var zombieDamping = -0.2;
 var zombieSize = 80;
 var zombieColor;
 
-var humanY = 0;
+var humanY;
 var humanX;
 var humanV = 0;
 var humanVx = 0;
-var humanA = 0.15;
-var humanAx = 0.1;
-var humanDamping = -0.4;
-var humanSize = 80;
+var humanA = 0.3;
+var humanAx = 0.07;
+var humanDamping = -0.7;
+var humanSize;
 var humanColor;
 
 var img;
@@ -25,10 +25,12 @@ var imgY = 100;
 var imgV = 0;
 var imgA = 0.3;
 var imgDamping = -0.4;
-var imgSize = 80;
+var imgSize = 150;
 
 var backgroundColor;
 
+const MIN_SIZE = 25;
+const MAX_SIZE = 150;
 
 function preload() {
 	img = loadImage("https://i.imgur.com/I5mZrzP.jpg")
@@ -36,23 +38,23 @@ function preload() {
 
 function setup() {
 	createCanvas(windowWidth, windowHeight);
-	backgroundColor = color(252, 232, 238);
-	humanColor = color(145, 187, 255);
-	zombieColor = color(43, 206, 127);
-	zombieX = 500;
-	humanX = 0;
+	backgroundColor = color(255, 250, 244);
+	initializeZombie();
+	initializeHuman();
 }
 
 function draw() {
 	background(backgroundColor);
   	noStroke();
-  	image(img, imgX, imgY, imgSize, imgSize);
+  	//image(img, imgX, imgY, imgSize, imgSize);
 
   	drawZombie();
-  	moveZombie();
+  	//moveZombie();
   	drawHuman();
-  	moveHuman();
-  	moveImg();
+  	//moveHuman();
+  	zombieY += 1
+  	humanY -= 1
+
 }
 
 function moveImg() {
@@ -64,9 +66,16 @@ function moveImg() {
 	}
 }
 
+function initializeZombie() {
+	zombieX = random(100, windowWidth - 100);
+	zombieY = random(100, 200);
+	zombieSize = random(MIN_SIZE, MAX_SIZE);
+	zombieColor = color(random(100, 200), 255, 0, random(100, 200));
+}
+
 function drawZombie() {
 	fill(zombieColor);
-  	rect(zombieX, zombieY, zombieSize, zombieSize);
+  	ellipse(zombieX, zombieY, zombieSize, zombieSize);
 }
 
 function moveZombie() {
@@ -76,6 +85,14 @@ function moveZombie() {
     	zombieY = windowHeight - (zombieSize);
     	zombieV *= zombieDamping;
   	}
+}
+
+function initializeHuman() {
+	humanX = random(100, windowWidth - 100);
+	humanY = random(windowHeight - 200, windowHeight - 100);
+	humanSize = random(MIN_SIZE, MAX_SIZE);
+	humanColor = color(random(75,200),random(75,200),255, 150);
+
 }
 
 function drawHuman() {
@@ -91,5 +108,11 @@ function moveHuman() {
   	if (humanY + (humanSize / 2) >= windowHeight) {
     	humanY = windowHeight - (humanSize / 2);
     	humanV *= humanDamping;
+  	}
+  	if (humanX - (humanSize / 2) >= windowWidth) {
+  		humanX = 0
+  		humanY = 0
+  		humanV = 0
+  		humanVx = 0
   	}
 }
