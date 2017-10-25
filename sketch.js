@@ -1,7 +1,5 @@
  // Zombulator by Garrett Gunnell
 
-var xoff = 0;
-
 var zombies;
 var humans;
 var backgroundColor;
@@ -43,10 +41,9 @@ function initializeZombies() {
 
 function initializeZombie(index) {
 	zombies[index] = {
-		x: random(100, windowWidth - 100),
-		y: random(50, 150),
+		position: createVector(random(100, windowWidth - 100), random(50, 150)),
 		size: random(MIN_SIZE,MAX_SIZE),
-		color: color(random(100,200), 255, random(100,200), 150),
+		color: color(random(100,200), 255, random(100,200), 200),
 		speed: random(0.5,1),
 	};
 }
@@ -59,7 +56,7 @@ function drawZombies() {
 
 function drawZombie(zombie) {
 	fill(zombie.color);
-	ellipse(zombie.x, zombie.y, zombie.size, zombie.size);	
+	ellipse(zombie.position.x, zombie.position.y, zombie.size, zombie.size);	
 }
 
 function moveZombies() {
@@ -69,9 +66,8 @@ function moveZombies() {
 }
 
 function moveZombie(zombie) {
-	zombie.y += zombie.speed;
-	zombie.y += random(-1,1);
-	zombie.x += random(-1,1);	
+	zombie.position.add(0, zombie.speed);
+	zombie.position.add(random(-1,1), random(-1,1));
 }
 
 function initializeHumans() {
@@ -84,9 +80,8 @@ function initializeHumans() {
 
 function initializeHuman(index) {
 	humans[index] = {
-		x: random(100, windowWidth - 100),
-		y: random(windowHeight - 150, windowHeight - 50),
-		color: color(random(100,200), 200, 255, 150),
+		position: createVector(random(100, windowWidth - 100), random(windowHeight - 150, windowHeight - 50)),
+		color: color(random(100,200), 200, 255, 200),
 		size: random(MIN_SIZE, MAX_SIZE),
 		speed: random(0.5,1),
 	}
@@ -100,7 +95,7 @@ function drawHumans() {
 
 function drawHuman(human) {
 		fill(human.color);
-		ellipse(human.x, human.y, human.size, human.size);	
+		ellipse(human.position.x, human.position.y, human.size, human.size);	
 }
 
 function moveHumans() {
@@ -110,7 +105,9 @@ function moveHumans() {
 }	
 
 function moveHuman(human) {
-	human.y -= human.speed;
-	human.y -= random(-1,1);
-	human.x += random(-1,1);	
+	human.position.sub(0, human.speed);
+	human.position.add(random(-1,1), random(-1,1));
+	//human.y -= human.speed;
+	//human.y -= random(-1,1);
+	//human.x += random(-1,1);	
 }
