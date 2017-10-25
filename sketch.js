@@ -1,12 +1,14 @@
  // Zombulator by Garrett Gunnell
 
+var xoff = 0;
+
 var zombies;
 var humans;
 var backgroundColor;
 const MIN_SIZE = 25;
 const MAX_SIZE = 50;
-const NUMBER_OF_HUMANS = 200;
-const NUMBER_OF_ZOMBIES = 200;
+const NUMBER_OF_HUMANS = 100;
+const NUMBER_OF_ZOMBIES = 100;
 
 function setup() {
 	createCanvas(windowWidth, windowHeight);
@@ -34,10 +36,6 @@ function draw() {
 function initializeZombies() {
 	zombies = [];
 
-	zombieXs = [];
-	zombieYs = [];
-	zombieSizes = [];
-	zombieColors = [];
 	for (var i = 0; i < NUMBER_OF_ZOMBIES; ++i) {
 		initializeZombie(i);
 	}
@@ -49,31 +47,31 @@ function initializeZombie(index) {
 		y: random(50, 150),
 		size: random(MIN_SIZE,MAX_SIZE),
 		color: color(random(100,200), 255, random(100,200), 150),
+		speed: random(0.5,1),
 	};
 }
 
 function drawZombies() {
 	for (var i = 0;i < NUMBER_OF_ZOMBIES; ++i) {
-		drawZombie(i);
+		drawZombie(zombies[i]);
 	}
 }
 
-function drawZombie(index) {
-	zombie = zombies[index];
+function drawZombie(zombie) {
 	fill(zombie.color);
 	ellipse(zombie.x, zombie.y, zombie.size, zombie.size);	
 }
 
 function moveZombies() {
 	for (var i = 0;i < NUMBER_OF_ZOMBIES; ++i) {
-		moveZombie(i);
+		moveZombie(zombies[i]);
 	}
 }
 
-function moveZombie(index) {
-	zombies[index].y += 0.5;
-	zombies[index].y += random(-1,1);
-	zombies[index].x += random(-1,1);	
+function moveZombie(zombie) {
+	zombie.y += zombie.speed;
+	zombie.y += random(-1,1);
+	zombie.x += random(-1,1);	
 }
 
 function initializeHumans() {
@@ -90,29 +88,29 @@ function initializeHuman(index) {
 		y: random(windowHeight - 150, windowHeight - 50),
 		color: color(random(100,200), 200, 255, 150),
 		size: random(MIN_SIZE, MAX_SIZE),
+		speed: random(0.5,1),
 	}
 }
 
 function drawHumans() {
 	for (var i = 0;i < NUMBER_OF_HUMANS; ++i) {
-		drawHuman(i);
+		drawHuman(humans[i]);
 	}
 }
 
-function drawHuman(index) {
-	human = humans[index];
+function drawHuman(human) {
 		fill(human.color);
 		ellipse(human.x, human.y, human.size, human.size);	
 }
 
 function moveHumans() {
 	for (var i = 0;i < NUMBER_OF_HUMANS; ++i) {
-		moveHuman(i);
+		moveHuman(humans[i]);
 	}
+}	
 
-function moveHuman(index) {
-	humans[index].y -= 0.5;
-	humans[index].y -= random(-1,1);
-	humans[index].x += random(-1,1);	
-}
+function moveHuman(human) {
+	human.y -= human.speed;
+	human.y -= random(-1,1);
+	human.x += random(-1,1);	
 }
