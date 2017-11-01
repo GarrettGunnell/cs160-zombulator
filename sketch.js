@@ -1,6 +1,8 @@
  // Zombulator by Garrett Gunnell
 
 var population = [];
+var humanPop = 0;
+var zombiePop = 0;
 var backgroundColor;
 const MIN_SIZE = 25;
 const MAX_SIZE = 60;
@@ -22,10 +24,10 @@ function draw() {
 	background(zombieBackground);
   	noStroke();
 
-  	fill(0);
+  	fill(255);
   	textFont("Arial", 10);
-  	//text("Zombies: " + NUMBER_OF_ZOMBIES, width / 2, 25);
-  	//text("Humans: " + NUMBER_OF_HUMANS, width / 2, height - 25);
+  	text("Zombies: " + zombiePop, width / 2, 25);
+  	text("Humans: " + humanPop, width / 2, height - 25);
 
   	drawPopulation();
   	movePopulation();
@@ -37,8 +39,10 @@ function initializePopulation() {
 
 		if (x <= POPULATION_RATIO) {
 			population[i] = initializeZombie();
+			++zombiePop;
 		} else {
 			population[i] = initializeHuman();
+			++humanPop;
 		}
 	}
 }
