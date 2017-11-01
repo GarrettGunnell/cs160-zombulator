@@ -1,12 +1,11 @@
  // Zombulator by Garrett Gunnell
 
-var zombies;
-var humans;
+var population = [];
 var backgroundColor;
 const MIN_SIZE = 25;
 const MAX_SIZE = 60;
-const NUMBER_OF_HUMANS = 100;
-const NUMBER_OF_ZOMBIES = 100;
+const POPULATION_SIZE = 200;
+const POPULATION_RATIO = 50;
 
 
 function preload() {
@@ -16,8 +15,7 @@ function preload() {
 function setup() {
 	createCanvas(windowWidth, windowHeight);
 	backgroundColor = color(254, 247, 255);
-	initializeZombies();
-	initializeHumans();
+	initializePopulation();
 }
 
 function draw() {
@@ -29,18 +27,31 @@ function draw() {
   	//text("Zombies: " + NUMBER_OF_ZOMBIES, width / 2, 25);
   	//text("Humans: " + NUMBER_OF_HUMANS, width / 2, height - 25);
 
-  	drawZombies();
-  	drawHumans();
-  	moveZombies();
-  	moveHumans();
-
+  	drawPopulation();
+  	movePopulation();
 }
 
-function initializeZombies() {
-	zombies = [];
+function initializePopulation() {
+	for (var i = 0; i < POPULATION_SIZE; ++i) {
+		x = random(0, 100);
 
-	for (var i = 0; i < NUMBER_OF_ZOMBIES; ++i) {
-		zombies[i] = initializeZombie();
+		if (x <= POPULATION_RATIO) {
+			population[i] = initializeZombie();
+		} else {
+			population[i] = initializeHuman();
+		}
+	}
+}
+
+function drawPopulation() {
+	for (var i = 0; i < POPULATION_SIZE; ++i) {
+		population[i].draw();
+	}
+}
+
+function movePopulation() {
+	for (var i = 0; i < POPULATION_SIZE; ++i) {
+		population[i].move();
 	}
 }
 
@@ -61,26 +72,6 @@ function initializeZombie() {
 	};
 }
 
-function drawZombies() {
-	for (var i = 0;i < NUMBER_OF_ZOMBIES; ++i) {
-		zombies[i].draw();
-	}
-}
-
-function moveZombies() {
-	for (var i = 0;i < NUMBER_OF_ZOMBIES; ++i) {
-		zombies[i].move();
-	}
-}
-
-function initializeHumans() {
-	humans = [];
-
-	for (var i = 0;i < NUMBER_OF_HUMANS; ++i) {
-		humans[i] = initializeHuman();
-	}
-}
-
 function initializeHuman() {
 	return {
 		position: createVector(random(100, width - 100), random(height - 150, height - 50)),
@@ -97,15 +88,3 @@ function initializeHuman() {
 		},
 	}
 }
-
-function drawHumans() {
-	for (var i = 0;i < NUMBER_OF_HUMANS; ++i) {
-		humans[i].draw();
-	}
-}
-
-function moveHumans() {
-	for (var i = 0;i < NUMBER_OF_HUMANS; ++i) {
-		humans[i].move();
-	}
-}	
