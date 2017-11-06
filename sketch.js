@@ -2,12 +2,10 @@
 
 var population = [];
 var fightText = [];
-var humanPop = 0;
-var zombiePop = 0;
 var backgroundColor;
 var zombieBackground;
 const MIN_SIZE = 25;
-const MAX_SIZE = 60;
+const MAX_SIZE = 50;
 const POPULATION_SIZE = 200;
 const POPULATION_RATIO = 50;
 
@@ -39,21 +37,34 @@ function initializePopulation() {
 	for (var i = 0; i < POPULATION_SIZE; ++i) {
 		x = random(0, 100);
 
-		if (x <= POPULATION_RATIO) {
+		if (x <= 5) {
+			population[i] = initializeSuperZombie();
+		} else if (x <= POPULATION_RATIO) {
 			population[i] = initializeZombie();
-			++zombiePop;
-		} else {
+		}	else {
 			population[i] = initializeHuman();
-			++humanPop;
 		}
 	}
 }
 
 function drawPopulationCount() {
+	zombiePop = 0;
+	humanPop = 0;
+
+	 for (var i = 0; i < POPULATION_SIZE; ++i) {
+  	person = population[i];
+
+  	if (person.isHuman == true) {
+  		++humanPop;
+  	} else if (person.isZombie == true) {
+  		++zombiePop;
+  	}
+  };
+
 	fill(255);
   textFont("Arial", 12);
   text("Zombies: " + zombiePop, width / 2, 25);
-  text("Humans: " + humanPop, width / 2, height - 25);	
+  text("Humans: " + humanPop, width / 2, height - 25);
 }
 
 function drawPopulation() {
@@ -74,6 +85,9 @@ function initializeZombie() {
 		size: random(MIN_SIZE,MAX_SIZE),
 		color: color(random(100,200), 255, random(100,200), 200),
 		speed: random(0.5,1),
+		isZombie: true,
+		isHuman: false,
+		infectionChance: 70,
 		draw: function() {
 			fill(this.color);
 			ellipse(this.position.x, this.position.y, this.size, this.size);	
@@ -81,12 +95,6 @@ function initializeZombie() {
 		move: function() {
 			this.position.add(0, this.speed);
 			this.position.add(random(-1,1), random(-1,1));
-		},
-		isZombie: function() {
-			return true
-		},
-		isHuman: function() {
-			return false
 		},
 		isTouching: function(defender) {
 			var d = dist(this.position.x, this.position.y, defender.position.x, defender.position.y);
@@ -97,8 +105,76 @@ function initializeZombie() {
 				return false
 			}
 		},
+		becomeZombie: function() {
+			return;
+		},
+		isDead: function() {
+			this.position = createVector(0, 0);
+			this.color = (0,0,0,0);
+			this.speed = 0;
+			this.isZombie = false;
+			this.isHuman = false;
+			this.draw = function() {
+				return;
+			};
+			this.move = function() {
+				return;
+			};
+			this.isTouching = function() {
+				return;
+			};
+		}
 	};
 }
+
+function initializeSuperZombie() {
+	return {
+		position: createVector(random(100, width - 100), random(50, 150)),
+		size: random(MIN_SIZE + 25, MAX_SIZE + 25),
+		color: color(random(100,200), 255, random(100,200), 255),
+		speed: random(0.5,1),
+		isZombie: true,
+		isHuman: false,
+		infectionChance: 100,
+		draw: function() {
+			fill(this.color);
+			ellipse(this.position.x, this.position.y, this.size, this.size);	
+		},
+		move: function() {
+			this.position.add(0, this.speed);
+			this.position.add(random(-1,1), random(-1,1));
+		},
+		isTouching: function(defender) {
+			var d = dist(this.position.x, this.position.y, defender.position.x, defender.position.y);
+
+			if (d < (this.size / 2) + (defender.size / 2)) {
+				return true
+			} else {
+				return false
+			}
+		},
+		becomeZombie: function() {
+			return;
+		},
+		isDead: function() {
+			this.position = createVector(0, 0);
+			this.color = (0,0,0,0);
+			this.speed = 0;
+			this.isZombie = false;
+			this.isHuman = false;
+			this.draw = function() {
+				return;
+			};
+			this.move = function() {
+				return;
+			};
+			this.isTouching = function() {
+				return;
+			};
+		}
+	};
+}
+
 
 function initializeHuman() {
 	return {
@@ -108,6 +184,7 @@ function initializeHuman() {
 		speed: random(0.5,1),
 		isHuman: true,
 		isZombie: false,
+		infectionChance: 70,
 		draw: function() {
 			fill(this.color);
 			ellipse(this.position.x, this.position.y, this.size, this.size);
@@ -127,7 +204,19 @@ function initializeHuman() {
 			this.color = color(random(100,200), 255, random(100,200), 200);
 			this.isHuman = false
 			this.isZombie = true
-		},	
+			this.isTouch = function(defender) {
+				var d = dist(this.position.x, this.position.y, defender.position.x, defender.position.y);
+
+				if (d < (this.size / 2) + (defender.size / 2)) {
+					return true
+				} else {
+					return false
+				}
+			}
+		},
+		isDead: function() {
+			return;
+		}
 	}
 }
 
@@ -136,13 +225,14 @@ function handleCollisions() {
 		var attacker = population[i];
 		for (var j = i + 1; j < POPULATION_SIZE; ++j) {
 			var defender = population[j];
+			var encounter = random(0, 100);
 
-			if (attacker.isTouching(defender) == true && defender.isHuman == true) {
-				print("Fight!");
-				population[j].becomeZombie();
+			if (attacker.isTouching(defender) == true && defender.isHuman == true && encounter <= attacker.infectionChance) {
 				addFightText(defender);
-				--humanPop;
-				++zombiePop;
+				defender.becomeZombie();
+			} else if (attacker.isTouching(defender) == true && defender.isHuman == true && encounter > attacker.infectionChance) {
+				addFightText(defender);
+				attacker.isDead();
 			}
 		}
 	}
