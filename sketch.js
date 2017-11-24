@@ -234,7 +234,7 @@ function initializeHuman() {
 		speed: random(0.5,1),
 		isHuman: true,
 		isZombie: false,
-		infectionChance: 70,
+		winChance: 30,
 		draw: function() {
 			fill(this.color);
 			ellipse(this.position.x, this.position.y, this.size, this.size);
@@ -294,26 +294,33 @@ function handleCollisions() {
 			var defender = population[j];
 			var encounter = random(0, 100);
 
-			if (attacker.isTouching(defender) == true && attacker.isZombie == true && defender.isHuman == true && encounter <= attacker.infectionChance) {
-				//addFightText(defender);
-				defender.becomeZombie();
-				--humanPop;
-				++zombiePop;
-			} else if (attacker.isTouching(defender) == true && attacker.isZombie == true && defender.isHuman == true && encounter > attacker.infectionChance) {
-				//addFightText(defender);
-				attacker.isDead();
-				--zombiePop;
-			} else if (attacker.isTouching(defender) == true && attacker.isHuman == true && defender.isZombie == true && encounter > attacker.infectionChance) {
-				//addFightText(defender);
-				defender.isDead();
-				--zombiePop;
-			} else if (attacker.isTouching(defender) == true && attacker.isHuman == true && defender.isZombie == true && encounter <= attacker.infenctionChance) {
-				//addFightText(defender);
-				attacker.becomeZombie();
-				--humanPop;
-				++zombiePop;
-			}
+			handleFights(attacker, defender);
 		}
+	}
+}
+
+
+function handleFights(attacker, defender) {
+	var encounter = random(0, 100);
+
+	if (attacker.isTouching(defender) == true && attacker.isZombie == true && defender.isHuman == true && encounter <= attacker.infectionChance) {
+		addFightText(defender);
+		defender.becomeZombie();
+		--humanPop;
+		++zombiePop;
+	} else if (attacker.isTouching(defender) == true && attacker.isZombie == true && defender.isHuman == true && encounter > attacker.infectionChance) {
+		addFightText(defender);
+		attacker.isDead();
+		--zombiePop;
+	} else if (attacker.isTouching(defender) == true && attacker.isHuman == true && defender.isZombie == true && encounter < attacker.winChance) {
+		addFightText(attacker);
+		defender.isDead();
+		--zombiePop;
+	} else if (attacker.isTouching(defender) == true && attacker.isHuman == true && defender.isZombie == true && encounter >= attacker.winChance) {
+		addFightText(attacker);
+		attacker.becomeZombie();
+		--humanPop;
+		++zombiePop;	
 	}
 }
 
