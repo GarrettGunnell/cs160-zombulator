@@ -2,10 +2,11 @@
 
 var population = [];
 var fightText = [];
+var skull = [];
 var img;
 var skull;
 const MIN_SIZE = 20;
-const MAX_SIZE = 50;
+const MAX_SIZE = 40;
 const POPULATION_SIZE = 200;
 const POPULATION_RATIO = 50;
 
@@ -15,6 +16,7 @@ var circle2;
 var numFights = 0;
 var zombiePop = 0;
 var humanPop = 0;
+var numSkulls = 0;
 
 function preload() {
 	img = loadImage("https://i.imgur.com/H6nR504.png");
@@ -24,67 +26,21 @@ function preload() {
 function setup() {
 	createCanvas(windowWidth, windowHeight);
 	initializePopulation();
-	circle1 = createCircle1();
-	circle2 = createCircle2();
 }
 
 function draw() {
 	background(img);
 	noStroke();
 
-	image(skull, width / 2, height / 2, 35, 35);
+	//image(skull, width / 2, height / 2, 60, 55);
 
-	circle1.draw();
-	circle1.move();
-	circle2.draw();
-	circle2.move();
-
-	if (dist(circle1.position.x, circle1.position.y, circle2.position.x,circle2.position.y) <= circle1.size / 2 + circle2.size / 2) {
-		circle2.drawGuts();
-	}
-
-	//drawPopulationCount();
-	//drawPopulation();
-	//movePopulation();
-	//handleCollisions();
+	drawSkulls();
+	drawPopulationCount();
+	drawPopulation();
+	movePopulation();
+	handleCollisions();
 	//drawFightText();
 	//moveFightText();
-}
-
-function createCircle1() {
-	return {
-		position: createVector(windowWidth / 2, 200),
-		size: 50,
-		color: color(0, 200, 0, 150),
-		move: function() {
-			this.position.add(0, 1);
-		},
-		draw: function() {
-			noStroke();
-			fill(this.color);
-			ellipse(this.position.x, this.position.y, this.size, this.size);
-		},
-	}
-}
-
-function createCircle2() {
-	return {
-		position: createVector(windowWidth / 2, windowHeight - 200),
-		size: 50,
-		color: color(0, 0, 200, 150),
-		gutsColor: color(150, 0, 0, 100),
-		move: function() {
-			this.position.sub(0, 1);
-		},
-		draw: function() {
-			noStroke();
-			fill(this.color);
-			ellipse(this.position.x, this.position.y, this.size, this.size);
-		},
-		drawGuts: function() {
-			image(skull, this.x, this.y)
-		},			
-	};
 }
 
 function initializePopulation() {
@@ -300,23 +256,47 @@ function handleFights(attacker, defender) {
 	var encounter = random(0, 100);
 
 	if (attacker.isTouching(defender) == true && attacker.isZombie == true && defender.isHuman == true && encounter <= attacker.infectionChance) {
-		addFightText(defender);
+		//addFightText(defender);
 		defender.becomeZombie();
 		--humanPop;
 		++zombiePop;
 	} else if (attacker.isTouching(defender) == true && attacker.isZombie == true && defender.isHuman == true && encounter > attacker.infectionChance) {
-		addFightText(defender);
+		addSkull(defender);
+		//addFightText(defender);
 		attacker.isDead();
 		--zombiePop;
 	} else if (attacker.isTouching(defender) == true && attacker.isHuman == true && defender.isZombie == true && encounter < attacker.winChance) {
-		addFightText(attacker);
+		addSkull(defender);
+		//addFightText(attacker);
 		defender.isDead();
 		--zombiePop;
 	} else if (attacker.isTouching(defender) == true && attacker.isHuman == true && defender.isZombie == true && encounter >= attacker.winChance) {
-		addFightText(attacker);
+		//addFightText(attacker);
 		attacker.becomeZombie();
 		--humanPop;
 		++zombiePop;	
+	}
+}
+
+function initializeSkull(defenderX, defenderY) {
+	return {
+		position: createVector(defenderX, defenderY),
+		draw: function() {
+			image(skull, this.position.x, this.position.y, 60, 55);
+		},
+	}
+}
+
+function addSkull(defender) {
+	defenderX = defender.position.x;
+	defenderY = defender.position.y;
+	skull[numSkulls] = initializeSkull(defenderX, defenderY);
+	numSkulls += 1;
+}
+
+function drawSkulls() {
+	for (var i = 0; i < numSkulls; ++i) {
+		skull[i].draw();
 	}
 }
 
@@ -325,7 +305,7 @@ function initializeFightText(defenderX, defenderY) {
 		position: createVector(defenderX, defenderY),
 		alpha: 255,
 		font: textFont("Arial", 12),
-		stroke: stroke(0,0,0),
+		stroke: stroke(0),
 		draw: function() {
 			fill(255, this.alpha);
 			stroke(0, this.alpha);
