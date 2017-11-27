@@ -2,8 +2,8 @@
 
 var population = [];
 var fightText = [];
-var backgroundColor;
-var zombieBackground;
+var img;
+var skull;
 const MIN_SIZE = 20;
 const MAX_SIZE = 50;
 const POPULATION_SIZE = 200;
@@ -16,33 +16,39 @@ var numFights = 0;
 var zombiePop = 0;
 var humanPop = 0;
 
+function preload() {
+	img = loadImage("https://i.imgur.com/H6nR504.png");
+	skull = loadImage("https://i.imgur.com/G8zwwib.png");
+}
+
 function setup() {
 	createCanvas(windowWidth, windowHeight);
-	backgroundColor = color(254, 247, 255);
 	initializePopulation();
 	circle1 = createCircle1();
 	circle2 = createCircle2();
 }
 
 function draw() {
-	background(255);
+	background(img);
 	noStroke();
 
-	//circle1.draw();
-	//circle1.move();
-	//circle2.draw();
-	//circle2.move();
+	image(skull, width / 2, height / 2, 35, 35);
 
-	//if (dist(circle1.position.x, circle1.position.y, circle2.position.x,circle2.position.y) <= circle1.size / 2 + circle2.size / 2) {
-		//circle2.drawGuts();
-	//}
+	circle1.draw();
+	circle1.move();
+	circle2.draw();
+	circle2.move();
 
-	drawPopulationCount();
-	drawPopulation();
-	movePopulation();
-	handleCollisions();
-	drawFightText();
-	moveFightText();
+	if (dist(circle1.position.x, circle1.position.y, circle2.position.x,circle2.position.y) <= circle1.size / 2 + circle2.size / 2) {
+		circle2.drawGuts();
+	}
+
+	//drawPopulationCount();
+	//drawPopulation();
+	//movePopulation();
+	//handleCollisions();
+	//drawFightText();
+	//moveFightText();
 }
 
 function createCircle1() {
@@ -76,18 +82,8 @@ function createCircle2() {
 			ellipse(this.position.x, this.position.y, this.size, this.size);
 		},
 		drawGuts: function() {
-			this.draw = function() {
-				noStroke();
-				fill(this.gutsColor);
-				ellipse(this.position.x - 6, this.position.y, 5, 5);
-				ellipse(this.position.x - 4, this.position.y + 4, 5, 5);
-				ellipse(this.position.x + 4, this.position.y + 4, 5 ,5);
-				ellipse(this.position.x + 6, this.position.y, 5, 5);
-			}
-			this.move = function() {
-				return;
-			}
-		}			
+			image(skull, this.x, this.y)
+		},			
 	};
 }
 
@@ -109,11 +105,11 @@ function initializePopulation() {
 }
 
 function drawPopulationCount() {
-	fill(255);
-  textFont("Arial", 14);
+	fill(0);
+  textFont("Verdana", 20);
   stroke(0);
   text("Zombies: " + zombiePop, width / 2, 25);
-  text("Humans: " + humanPop, width / 2, height - 25);
+  text("Humans: " + humanPop, width / 2, height - 30);
 }
 
 function drawPopulation() {
